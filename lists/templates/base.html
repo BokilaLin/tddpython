@@ -14,7 +14,12 @@
 
             <nav class="navbar navbar-default" role="navigation">
                 <a class="navbar-brand" href="/">Superlists</a>
-                <a class="btn navbar-btn navbar-right" href="#" id="id_login">Sign in</a>
+                {% if user.email %}
+                    <a class="btn navbar-btn navbar-right" href="#" id="id_logout">Log out</a>
+                    <span class="navbar-text navbar-right">Logged in as {{ user.email }}</span>
+                {% else %}
+                    <a class="btn navbar-btn navbar-right" href="#" id="id_login">Sign in</a>
+                {% endif %}
             </nav>
 
             <div class="row">
@@ -44,7 +49,20 @@
             </div>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+        <script src="https://login.persona.org/include.js"></script>
         <script src="/static/list.js"></script>
+        <script src="/static/accounts.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            $(document).ready(function() {
+                var user = "{{user.email}}" || null;
+                var token = "{{csrf_token}}";
+                var urls = {
+                    login: "{% url 'persona_login' %}",
+                    logout: "TODO",
+                };
+                Superlists.Accounts.initialize(navigator, user, token, urls);
+            });
+        </script>
     </body>
 
 
