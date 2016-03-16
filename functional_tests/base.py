@@ -8,6 +8,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import WebDriverException
+from xvfbwrapper import Xvfb
 from .server_tools import reset_database
 
 DEFAULT_WAIT = 5
@@ -39,6 +40,9 @@ class FunctionalTest(StaticLiveServerTestCase):
     def setUp(self):
         if self.against_staging:
             reset_database(self.server_host)
+        if not sys.platform == 'darwin':
+            self.vdisplay = Xvfb()
+            self.vdisplay.start()
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(DEFAULT_WAIT)
 
@@ -52,6 +56,8 @@ class FunctionalTest(StaticLiveServerTestCase):
                 self.take_screenshot()
                 self.dump_html()
         self.browser.quit()
+        if not sys.platform == 'darwin':
+            self.vdisplay.stop()
         super().tearDown()
 
     def _test_has_failed(self):
